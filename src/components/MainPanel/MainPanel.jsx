@@ -13,12 +13,10 @@ class MainPanel extends Component {
             isLoaded: false,
             result: '',
             operation: null,
-            range: 20,
+            range: 10,
             selectedOperations: ['ADDITION'],
             isAnswerCorrect: null,
             wasAnswered: false,
-            checkedItems: new Map([['ADDITION',true], ['SUBTRACTION', false]]),
-            tempRange: 20
         }
     }
 
@@ -27,8 +25,6 @@ class MainPanel extends Component {
     }
 
     callFactors(operations, range) {
-
-        console.log("Call parameters: ", operations.join() + " " + range)
         let url = SERVER_URL + '/operation?operationTypes=' + operations.join() + '&range=' + range;
         fetch(url, {mode: "cors", headers: {'Content-Type': 'application/json'}})
             .then(res => res.json())
@@ -92,63 +88,35 @@ class MainPanel extends Component {
             })
     }
 
-    handleOperationsUpdate = (event) =>{
-        const item = event.target.name;
-        const isChecked = event.target.checked;
-        this.setState(prevState => ({ checkedItems: prevState.checkedItems.set(item, isChecked) }));
-    }
+    handleApplyOptions = (options) => {
+        const actualRange = this.state.range;
+        const actualSelection = this.state.selectedOperations
+        const newRange = options.range;
+        const newSelection = options.operations;
 
-    updateRange = (e) => {
-        console.log("Update range", e.target.value)
-        this.setState({
-            tempRange: parseInt(e.target.value, 10)
-        })
-    }
-
-    applyOptions = () => {
-        console.log("Apply filters")
-        let options = []
-        const actual = this.state.selectedOperations
-        const actualRange = this.state.range
-
-        for (const [key, value] of this.state.checkedItems.entries()) {
-            if (value) {
-                options.push(key)
-            }
-        }
-
-        var is_same = (options.length === actual.length) && options.every(function(element, index) {
-            return element === actual[index];
-        });
-
-        if (options.length === 0 || this.state.tempRange <= 0) {
-            console.log("Invalid options!");
-        } else if(!is_same || actualRange !== this.state.tempRange){
+        if (actualRange !== newRange || JSON.stringify(actualSelection) !== JSON.stringify(newSelection)) {
+            this.callFactors(newSelection, newRange);
             this.setState({
-                selectedOperations: options,
-                range: this.state.tempRange
-            });
-            this.callFactors(options, this.state.tempRange);
+                selectedOperations: newSelection,
+                range: newRange
+            })
         }
     }
 
     render() {
-        const {error, isLoaded, result, operation, isAnswerCorrect, wasAnswered, checkedItems, tempRange} = this.state;
+        const {error, isLoaded, result, operation, isAnswerCorrect, wasAnswered} = this.state;
 
         return (
             <div className={"App-main-panel"}>
                 {error && <ErrorPage/>}
                 {!error && !isLoaded && <LoadingPage/>}
-                {!error && isLoaded && <OptionsPanel onClick={this.handleOperationsUpdate} checked={checkedItems} apply={this.applyOptions} value ={tempRange} onChange={this.updateRange}/>}
+                {!error && isLoaded && <OptionsPanel applyOptions={this.handleApplyOptions}/>}
                 {!error && isLoaded && <OperationQuiz operation={operation}
                                                       onChange={this.handleChange}
                                                       onKeyDown={this.handleEnter}
                                                       value={result}
                                                       isAnswerCorrect={isAnswerCorrect}
                                                       wasAnswered={wasAnswered}/>}
-
-
-
             </div>
         )
     }
