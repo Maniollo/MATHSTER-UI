@@ -8,3 +8,5 @@ export const operationSign = (operationType) => {
             return '?'
     }
 }
+
+export const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))

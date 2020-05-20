@@ -4,6 +4,7 @@ import {SERVER_URL} from "../../constants";
 import {LoadingPage} from "./LoadingPage/LoadingPage";
 import {ErrorPage} from "./ErrorPage/ErrorPage";
 import {OptionsPanel} from "./OptionsPanel/OptionsPanel";
+import {sleep} from "../../utils/utils";
 
 class MainPanel extends Component {
     constructor(props) {
@@ -17,18 +18,23 @@ class MainPanel extends Component {
             selectedOperations: ['ADDITION'],
             isAnswerCorrect: null,
             wasAnswered: false,
+            disableInput: false,
+            sessionHistory:[]
         }
     }
 
+
+
     componentDidMount() {
-        this.callFactors(this.state.selectedOperations, this.state.range);
+        sleep(500).then(() => this.callFactors())
     }
 
-    callFactors(operations, range) {
-        let url = SERVER_URL + '/operation?operationTypes=' + operations.join() + '&range=' + range;
+    callFactors() {
+        let url = SERVER_URL + '/operation?operationTypes=' + this.state.selectedOperations.join() + '&range=' + this.state.range;
         fetch(url, {mode: "cors", headers: {'Content-Type': 'application/json'}})
             .then(res => res.json())
-            .then((result) => {
+            .then(
+                (result) => {
                     this.setState({
                         isLoaded: true,
                         operation: result
@@ -52,6 +58,9 @@ class MainPanel extends Component {
     handleEnter = (event) => {
         if (event.key === 'Enter') {
             this.verifyAttempt(parseInt(event.target.value, 10))
+            this.setState({
+                disableInput: true
+            })
         }
     }
 
@@ -68,24 +77,33 @@ class MainPanel extends Component {
             method: 'post', headers: {'Content-Type': 'application/json',}, body: JSON.stringify(req)
         })
             .then(res => res.json())
-            .then(res => {
-                if (res.correct) {
-                    this.callFactors(this.state.selectedOperations, this.state.range);
-                    this.setState({
-                            result: '',
-                            isAnswerCorrect: true,
-                            wasAnswered: true
-                        }
-                    )
-                } else {
-                    this.setState({
-                            result: '',
-                            isAnswerCorrect: false,
-                            wasAnswered: true
-                        }
-                    )
-                }
+            .then(res => this.handleAnswer(res.correct))
+    }
+
+    handleAnswer = (isCorrect) => {
+        let currentAttempt = {
+            operation: this.state.operation,
+            result: this.state.result,
+            correct: isCorrect,
+            timeStamp: new Date()
+        };
+
+        this.setState({
+            isAnswerCorrect: isCorrect,
+            wasAnswered: true,
+            sessionHistory: [...this.state.sessionHistory, currentAttempt]
+        })
+
+        sleep(1000).then(() => {
+            this.setState({
+                result:'',
+                wasAnswered:false,
+                disableInput:false
             })
+
+            isCorrect && this.callFactors();
+        })
+
     }
 
     handleApplyOptions = (options) => {
@@ -95,16 +113,15 @@ class MainPanel extends Component {
         const newSelection = options.operations;
 
         if (actualRange !== newRange || JSON.stringify(actualSelection) !== JSON.stringify(newSelection)) {
-            this.callFactors(newSelection, newRange);
             this.setState({
                 selectedOperations: newSelection,
                 range: newRange
-            })
+            }, () => {this.callFactors()})
         }
     }
 
     render() {
-        const {error, isLoaded, result, operation, isAnswerCorrect, wasAnswered} = this.state;
+        const {error, isLoaded, result, operation, isAnswerCorrect, wasAnswered, disableInput} = this.state;
 
         return (
             <div className={"App-main-panel"}>
@@ -116,7 +133,10 @@ class MainPanel extends Component {
                                                       onKeyDown={this.handleEnter}
                                                       value={result}
                                                       isAnswerCorrect={isAnswerCorrect}
-                                                      wasAnswered={wasAnswered}/>}
+                                                      wasAnswered={wasAnswered}
+                                                      disableInput={disableInput}
+                                                      ref={this.inputRef}
+                />}
             </div>
         )
     }
