@@ -5,6 +5,7 @@ import {LoadingPage} from "./LoadingPage/LoadingPage";
 import {ErrorPage} from "./ErrorPage/ErrorPage";
 import {OptionsPanel} from "./OptionsPanel/OptionsPanel";
 import {sleep} from "../../utils/utils";
+import {CurrentSessionStatsPanel} from "./CurrentSessionStatsPanel/CurrentSessionStatsPanel";
 
 class MainPanel extends Component {
     constructor(props) {
@@ -19,10 +20,11 @@ class MainPanel extends Component {
             isAnswerCorrect: null,
             wasAnswered: false,
             disableInput: false,
-            sessionHistory:[]
+            sessionHistory: [],
+            attemptCounter: 0
         }
+        this.inputElement = React.createRef();
     }
-
 
 
     componentDidMount() {
@@ -39,6 +41,7 @@ class MainPanel extends Component {
                         isLoaded: true,
                         operation: result
                     })
+                    this.inputElement.current.focus();
                 },
                 (error) => {
                     this.setState({
@@ -81,28 +84,32 @@ class MainPanel extends Component {
     }
 
     handleAnswer = (isCorrect) => {
+        const id = this.state.attemptCounter + 1
         let currentAttempt = {
+            id: id,
             operation: this.state.operation,
             result: this.state.result,
             correct: isCorrect,
             timeStamp: new Date()
         };
 
-        this.setState({
+        this.setState(prevState => ({
             isAnswerCorrect: isCorrect,
             wasAnswered: true,
-            sessionHistory: [...this.state.sessionHistory, currentAttempt]
-        })
+            sessionHistory: [...this.state.sessionHistory, currentAttempt],
+            attemptCounter: id
+        }))
 
         sleep(1000).then(() => {
             this.setState({
-                result:'',
-                wasAnswered:false,
-                disableInput:false
+                result: '',
+                wasAnswered: false,
+                disableInput: false
             })
-
+            this.inputElement.current.focus();
             isCorrect && this.callFactors();
         })
+
 
     }
 
@@ -116,12 +123,15 @@ class MainPanel extends Component {
             this.setState({
                 selectedOperations: newSelection,
                 range: newRange
-            }, () => {this.callFactors()})
+            }, () => {
+                this.callFactors()
+            })
         }
+        this.inputElement.current.focus();
     }
 
     render() {
-        const {error, isLoaded, result, operation, isAnswerCorrect, wasAnswered, disableInput} = this.state;
+        const {error, isLoaded, result, operation, isAnswerCorrect, wasAnswered, disableInput, sessionHistory} = this.state;
 
         return (
             <div className={"App-main-panel"}>
@@ -135,8 +145,9 @@ class MainPanel extends Component {
                                                       isAnswerCorrect={isAnswerCorrect}
                                                       wasAnswered={wasAnswered}
                                                       disableInput={disableInput}
-                                                      ref={this.inputRef}
+                                                      inputRef={this.inputElement}
                 />}
+                {!error && isLoaded && <CurrentSessionStatsPanel sessionHistory={sessionHistory}/>}
             </div>
         )
     }

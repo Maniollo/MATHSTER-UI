@@ -132,9 +132,10 @@ export class OptionsPanel extends React.Component {
                                                 {checkboxes.map(item => (
                                                     <FormControlLabel key={item.name}
                                                                       label={item.name}
-                                                                      control={<Checkbox checked={selectedOptions.get(item.name)}
-                                                                                         onChange={this.handleCheckboxChange}
-                                                                                         name={item.name}/>}
+                                                                      control={<Checkbox
+                                                                          checked={selectedOptions.get(item.name)}
+                                                                          onChange={this.handleCheckboxChange}
+                                                                          name={item.name}/>}
                                                     />))}
 
                                             </FormGroup>
@@ -153,14 +154,17 @@ export class OptionsPanel extends React.Component {
                                             min={10}
                                             max={100}
                                             onChange={this.handleRangeChange}
+                                            style={{"width": 400}}
                                         />
                                     </Col>
                                 </Row>
                                 <Row>
                                     <Col/>
                                     <Col>
-                                        <Button variant={"contained"} onClick={this.handleSetDefaultsButton}>Set defaults</Button>
-                                        <Button variant={"contained"} color="primary" onClick={this.handleApplyButton}>Apply</Button>
+                                        <Button variant={"contained"} onClick={this.handleSetDefaultsButton}
+                                                style={{"margin": 6}}>Set defaults</Button>
+                                        <Button variant={"contained"} color="primary" onClick={this.handleApplyButton}
+                                                style={{"margin": 6}}>Apply</Button>
                                     </Col>
                                 </Row>
                                 <Row>
@@ -176,7 +180,6 @@ export class OptionsPanel extends React.Component {
         </div>
 
 
-
-        ;
+            ;
     }
 }
