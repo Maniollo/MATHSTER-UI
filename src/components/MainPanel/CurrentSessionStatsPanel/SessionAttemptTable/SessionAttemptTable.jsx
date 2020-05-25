@@ -41,7 +41,6 @@ export class SessionAttemptTable extends React.Component {
     render() {
         let {records} = this.props;
         const {page, rowsPerPage} = this.state
-        const emptyRows = rowsPerPage - Math.min(rowsPerPage, records.length - page * rowsPerPage);
 
         return <TableContainer>
             <Table aria-label="dense pagination table">
@@ -65,12 +64,6 @@ export class SessionAttemptTable extends React.Component {
                                 : <CancelOutlinedIcon style={{color: 'Tomato'}}/>}</TableCell>
                         </TableRow>
                     ))}
-
-                    {/*{emptyRows > 0 && (*/}
-                    {/*    <TableRow style={{ height: 53 * emptyRows }}>*/}
-                    {/*        <TableCell colSpan={6} />*/}
-                    {/*    </TableRow>*/}
-                    {/*)}*/}
                 </TableBody>
                 <TableFooter>
                     <TableRow>
@@ -86,60 +79,10 @@ export class SessionAttemptTable extends React.Component {
                             }}
                             onChangePage={this.handleChangePage}
                             onChangeRowsPerPage={this.handleChangeRowsPerPage}
-                            // ActionsComponent={TablePaginationActions}
                         />
                     </TableRow>
                 </TableFooter>
             </Table>
         </TableContainer>;
     }
-}
-
-function TablePaginationActions(props) {
-    const {count, page, rowsPerPage, onChangePage} = props;
-
-    const handleFirstPageButtonClick = (event) => {
-        onChangePage(event, 0);
-    };
-
-    const handleBackButtonClick = (event) => {
-        onChangePage(event, page - 1);
-    };
-
-    const handleNextButtonClick = (event) => {
-        onChangePage(event, page + 1);
-    };
-
-    const handleLastPageButtonClick = (event) => {
-        onChangePage(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
-    };
-
-    return (
-        <div>
-            <IconButton
-                onClick={handleFirstPageButtonClick}
-                disabled={page === 0}
-                aria-label="first page"
-            >
-                {true ? <LastPageIcon/> : <FirstPageIcon/>}
-            </IconButton>
-            <IconButton onClick={handleBackButtonClick} disabled={page === 0} aria-label="previous page">
-                {true ? <KeyboardArrowRight/> : <KeyboardArrowLeft/>}
-            </IconButton>
-            <IconButton
-                onClick={handleNextButtonClick}
-                disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-                aria-label="next page"
-            >
-                {true ? <KeyboardArrowLeft/> : <KeyboardArrowRight/>}
-            </IconButton>
-            <IconButton
-                onClick={handleLastPageButtonClick}
-                disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-                aria-label="last page"
-            >
-                {true ? <FirstPageIcon/> : <LastPageIcon/>}
-            </IconButton>
-        </div>
-    );
 }
