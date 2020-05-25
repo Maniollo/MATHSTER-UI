@@ -4,7 +4,6 @@ import {SERVER_URL} from "../../constants";
 import {LoadingPage} from "./LoadingPage/LoadingPage";
 import {ErrorPage} from "./ErrorPage/ErrorPage";
 import {OptionsPanel} from "./OptionsPanel/OptionsPanel";
-import {sleep} from "../../utils/utils";
 import {CurrentSessionStatsPanel} from "./CurrentSessionStatsPanel/CurrentSessionStatsPanel";
 
 class MainPanel extends Component {
@@ -28,8 +27,10 @@ class MainPanel extends Component {
 
 
     componentDidMount() {
-        sleep(500).then(() => this.callFactors())
+        this.sleep(500).then(() => this.callFactors())
     }
+
+    sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 
     callFactors() {
         let url = SERVER_URL + '/operation?operationTypes=' + this.state.selectedOperations.join() + '&range=' + this.state.range;
@@ -80,7 +81,10 @@ class MainPanel extends Component {
             method: 'post', headers: {'Content-Type': 'application/json',}, body: JSON.stringify(req)
         })
             .then(res => res.json())
-            .then(res => this.handleAnswer(res.correct))
+            .then(
+                res => this.handleAnswer(res.correct),
+                error => this.setState({error})
+            );
     }
 
     handleAnswer = (isCorrect) => {
@@ -93,14 +97,14 @@ class MainPanel extends Component {
             timeStamp: new Date()
         };
 
-        this.setState(prevState => ({
+        this.setState({
             isAnswerCorrect: isCorrect,
             wasAnswered: true,
             sessionHistory: [...this.state.sessionHistory, currentAttempt],
             attemptCounter: id
-        }))
+        })
 
-        sleep(1000).then(() => {
+        this.sleep(1000).then(() => {
             this.setState({
                 result: '',
                 wasAnswered: false,
@@ -109,8 +113,6 @@ class MainPanel extends Component {
             this.inputElement.current.focus();
             isCorrect && this.callFactors();
         })
-
-
     }
 
     handleApplyOptions = (options) => {
