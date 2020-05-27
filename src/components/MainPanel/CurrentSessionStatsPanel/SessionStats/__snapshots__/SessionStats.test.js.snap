@@ -1,0 +1,37 @@
+exports[`test renders correctly 1`] = `
+<div>
+  <span
+    style={
+      Object {
+        "margin": 10,
+      }
+    }>
+    Number of attempts: 
+    24
+  </span>
+  <span
+    style={
+      Object {
+        "margin": 10,
+      }
+    }>
+    6
+     / 
+    18
+  </span>
+  <span>
+    25
+    %
+  </span>
+  <div>
+    <span>
+      Session time: 
+      00
+      :
+      00
+      :
+      00
+    </span>
+  </div>
+</div>
+`;

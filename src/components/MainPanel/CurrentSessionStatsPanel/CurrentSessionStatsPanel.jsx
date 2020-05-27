@@ -14,5 +14,4 @@ export const CurrentSessionStatsPanel = ({sessionHistory}) => <div style={{"marg
                   noOfIncorrect={filterByCorrectness(sessionHistory, false).length}
     />
     <SessionAttemptTable records={sessionHistory}/>
-    {/*<SessionAttemptTable records={mockData}/>*/}
 </div>;

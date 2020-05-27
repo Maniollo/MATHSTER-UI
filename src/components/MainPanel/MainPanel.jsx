@@ -55,7 +55,7 @@ class MainPanel extends Component {
 
     handleChange = (e) => {
         this.setState({
-            result: parseInt(e.target.value, 10)
+            result: e.target.value === '' ? '' : parseInt(e.target.value, 10)
         })
     }
 
