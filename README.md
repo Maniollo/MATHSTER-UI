@@ -1,1 +1,1 @@
-## MATHSTER-UI [![Build Status](https://travis-ci.com/Maniollo/MATHSTER-UI.svg?branch=master)](https://travis-ci.org/Maniollo/MATHSTER-UI)
+## MATHSTER-UI [![Build Status](https://travis-ci.com/Maniollo/MATHSTER-UI.svg?branch=master)](https://travis-ci.com/Maniollo/MATHSTER-UI)
