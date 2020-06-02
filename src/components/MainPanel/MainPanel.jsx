@@ -20,7 +20,8 @@ class MainPanel extends Component {
             wasAnswered: false,
             disableInput: false,
             sessionHistory: [],
-            attemptCounter: 0
+            attemptCounter: 0,
+            attemptNumber: 1
         }
         this.inputElement = React.createRef();
     }
@@ -73,7 +74,8 @@ class MainPanel extends Component {
         const req = {
             operationFactors: this.state.operation,
             result: value,
-            correct: false
+            correct: false,
+            attemptNumber: this.state.attemptNumber
         }
 
         let url = SERVER_URL + '/results';
@@ -89,26 +91,31 @@ class MainPanel extends Component {
 
     handleAnswer = (isCorrect) => {
         const id = this.state.attemptCounter + 1
+        const attemptNo = isCorrect ? this.state.attemptNumber : this.state.attemptNumber + 1
         let currentAttempt = {
             id: id,
             operation: this.state.operation,
             result: this.state.result,
             correct: isCorrect,
-            timeStamp: new Date()
+            timeStamp: new Date(),
+            attemptNumber: this.state.attemptNumber
         };
 
         this.setState({
             isAnswerCorrect: isCorrect,
             wasAnswered: true,
             sessionHistory: [...this.state.sessionHistory, currentAttempt],
-            attemptCounter: id
+            attemptCounter: id,
+            attemptNumber: attemptNo
         })
 
         this.sleep(1000).then(() => {
+            const attemptNo = isCorrect ? 1 : this.state.attemptNumber
             this.setState({
                 result: '',
                 wasAnswered: false,
-                disableInput: false
+                disableInput: false,
+                attemptNumber: attemptNo
             })
             this.inputElement.current.focus();
             isCorrect && this.callFactors();
