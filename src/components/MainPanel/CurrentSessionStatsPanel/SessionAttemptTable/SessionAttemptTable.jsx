@@ -44,6 +44,7 @@ export class SessionAttemptTable extends React.Component {
                         <TableCell>No</TableCell>
                         <TableCell>Operation</TableCell>
                         <TableCell>Is Correct</TableCell>
+                        <TableCell>Solved in step</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -57,6 +58,7 @@ export class SessionAttemptTable extends React.Component {
                             <TableCell>{row.correct
                                 ? <CheckCircleOutlineIcon style={{color: 'MediumSeaGreen'}}/>
                                 : <CancelOutlinedIcon style={{color: 'Tomato'}}/>}</TableCell>
+                            <TableCell>{row.attemptNumber}</TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
@@ -64,7 +66,7 @@ export class SessionAttemptTable extends React.Component {
                     <TableRow>
                         <TablePagination
                             rowsPerPageOptions={[5, 10, 25, {label: 'All', value: -1}]}
-                            colSpan={3}
+                            colSpan={4}
                             count={records.length}
                             rowsPerPage={this.state.rowsPerPage}
                             page={this.state.page}
