@@ -5,7 +5,7 @@ services:
   mathster-ui:
     container_name: mathster-ui
     build: .
-    image: mathster-uie:0.1.0
+    image: mathster-ui:0.0.1
     volumes:
       - '.:/app'
       - '/app/node_modules'
